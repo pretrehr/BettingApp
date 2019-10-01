@@ -3,6 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
+    <item android:title="Outils de base">
+        <menu>
+            <item
+                android:id="@+id/gain"
+                android:title="Retour attendu" />
+            <item
+                android:id="@+id/mises2"
+                android:title="Retour avec mise" />
+            <item
+                android:id="@+id/mises_freebet"
+                android:title="Retour avec mise en freebet" />
+            <item
+                android:id="@+id/pari_rembourse_si_perdant"
+                android:title="Gain si pari remboursé" />
+        </menu>
+    </item>
+
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
