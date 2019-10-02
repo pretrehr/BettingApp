@@ -1,4 +1,4 @@
-package com.example.android.bettingapp;
+package betClasses;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ public class Match {
 
     private Odds odds;
     private LocalDateTime date;
-    private ArrayList<String> opponents;
+    private String opponents;
 
 
-    public Match(ArrayList<String> opponents, Odds odds, LocalDateTime date) {
+    public Match(String opponents, Odds odds, LocalDateTime date) {
         this.opponents = opponents;
         this.odds = odds;
         this.date = date;
