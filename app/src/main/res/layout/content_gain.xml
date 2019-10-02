@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.android.bettingapp.GainActivity"
+    tools:showIn="@layout/app_bar_main">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/messageGain"
+        android:text="Entrez les cotes"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cote1"
+        app:layout_constraintTop_toBottomOf="@id/messageGain"
+        android:maxLength="4"
+        android:ems="3"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/coteN"
+        app:layout_constraintLeft_toRightOf="@id/cote1"
+        app:layout_constraintTop_toBottomOf="@id/messageGain"
+        android:maxLength="4"
+        android:ems="3"
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cote2"
+        app:layout_constraintTop_toBottomOf="@id/messageGain"
+        app:layout_constraintLeft_toRightOf="@id/coteN"
+        android:maxLength="4"
+        android:ems="3"
+        android:inputType="numberDecimal"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cote1"
+        android:id="@+id/gainButton"
+        android:text="Calcul"/>
+
+</android.support.constraint.ConstraintLayout>
