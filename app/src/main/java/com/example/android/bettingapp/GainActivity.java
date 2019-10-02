@@ -10,6 +10,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 public class GainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,6 +35,20 @@ public class GainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+
+
+    public void gain(View v) {
+        double cote1 = Double.parseDouble(((EditText) findViewById(R.id.cote1)).getText().toString());
+        double coteN = Double.parseDouble(((EditText) findViewById(R.id.coteN)).getText().toString());
+        double cote2 = Double.parseDouble(((EditText) findViewById(R.id.cote2)).getText().toString());
+        ArrayList<Double> listOdds = new ArrayList<Double>();
+        listOdds.add(cote1);
+        listOdds.add(coteN);
+        listOdds.add(cote2);
+        Odds odds = new Odds(listOdds);
+        ((TextView) findViewById(R.id.gainResult)).setText(Double.toString(odds.gain()));
     }
 
     @Override

@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/messageGain"
-        android:text="Entrez les cotes"/>
+        android:text="@string/messageGainText"/>
 
     <EditText
         android:layout_width="wrap_content"
@@ -49,6 +49,13 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/cote1"
         android:id="@+id/gainButton"
-        android:text="Calcul"/>
+        android:text="@string/gainButtonText"
+        android:onClick="gain"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gainButton"
+        android:id="@+id/gainResult"/>
 
 </android.support.constraint.ConstraintLayout>
