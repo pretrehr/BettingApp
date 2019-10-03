@@ -15,39 +15,89 @@
         android:id="@+id/messageGain"
         android:text="@string/messageGainText"/>
 
-    <EditText
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/cote1"
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/messageGain"
-        android:maxLength="4"
-        android:ems="3"
-        android:inputType="numberDecimal"/>
+        android:id="@+id/gainLayout">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/coteN"
-        app:layout_constraintLeft_toRightOf="@id/cote1"
-        app:layout_constraintTop_toBottomOf="@id/messageGain"
-        android:maxLength="4"
-        android:ems="3"
-        android:inputType="numberDecimal"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd0"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/cote2"
-        app:layout_constraintTop_toBottomOf="@id/messageGain"
-        app:layout_constraintLeft_toRightOf="@id/coteN"
-        android:maxLength="4"
-        android:ems="3"
-        android:inputType="numberDecimal"/>
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd1"
+            app:layout_constraintLeft_toRightOf="@id/odd0"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd2"
+            app:layout_constraintLeft_toRightOf="@id/odd1"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd3"
+            app:layout_constraintLeft_toRightOf="@id/odd2"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd4"
+            app:layout_constraintLeft_toRightOf="@id/odd3"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/odd5"
+            app:layout_constraintLeft_toRightOf="@id/odd4"
+            android:maxLength="4"
+            android:ems="3"
+            android:inputType="numberDecimal"/>
+
+    </android.support.constraint.ConstraintLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/cote1"
+        app:layout_constraintTop_toBottomOf="@id/gainLayout"
+        android:id="@+id/addButton"
+        android:text="+"
+        android:onClick="add"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gainLayout"
+        app:layout_constraintLeft_toRightOf="@id/addButton"
+        android:id="@+id/removeButton"
+        android:text="-"
+        android:onClick="remove"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/addButton"
         android:id="@+id/gainButton"
         android:text="@string/gainButtonText"
         android:onClick="gain"/>

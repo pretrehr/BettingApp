@@ -2,6 +2,7 @@ package com.example.android.bettingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,8 +12,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import betClasses.Odds;
 
@@ -36,18 +40,67 @@ public class GainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        ConstraintLayout gainLayout = (ConstraintLayout) findViewById(R.id.gainLayout);
+        for( int i = 0; i < gainLayout.getChildCount(); i++ ) {
+            editTextOddsList.add((EditText) gainLayout.getChildAt(i));
+            if (i < lengthOddsList) {
+                editTextOddsList.get(i).setVisibility(View.VISIBLE);
+            } else {
+                editTextOddsList.get(i).setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+    ArrayList<EditText> editTextOddsList = new ArrayList<EditText>();
+
+    int lengthOddsList = 3;
+
+    public void add(View v) {
+        editTextOddsList.get(lengthOddsList).setVisibility(View.VISIBLE);
+        lengthOddsList++;
+        if (lengthOddsList == 6) {
+            findViewById(R.id.addButton).setVisibility(View.INVISIBLE);
+        }
+        if (lengthOddsList == 2) {
+            findViewById(R.id.removeButton).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void remove(View v) {
+        lengthOddsList--;
+        if (lengthOddsList == 5) {
+            findViewById(R.id.addButton).setVisibility(View.VISIBLE);
+        }
+        if (lengthOddsList == 1) {
+            findViewById(R.id.removeButton).setVisibility(View.INVISIBLE);
+        }
+        editTextOddsList.get(lengthOddsList).setVisibility(View.INVISIBLE);
     }
 
 
-
     public void gain(View v) {
-        double cote1 = Double.parseDouble(((EditText) findViewById(R.id.cote1)).getText().toString());
-        double coteN = Double.parseDouble(((EditText) findViewById(R.id.coteN)).getText().toString());
-        double cote2 = Double.parseDouble(((EditText) findViewById(R.id.cote2)).getText().toString());
         ArrayList<Double> listOdds = new ArrayList<Double>();
-        listOdds.add(cote1);
-        listOdds.add(coteN);
-        listOdds.add(cote2);
+        double odd;
+        boolean warningDisplayed = false;
+        for (EditText et : editTextOddsList) {
+            if (et.getVisibility() == View.INVISIBLE) {
+                break;
+            }
+            try {
+                odd = Double.parseDouble(et.getText().toString());
+                if (odd>0) {
+                    listOdds.add(odd);
+                }
+                else {
+                    throw new NumberFormatException();
+                }
+            }
+            catch (NumberFormatException e) {
+                if (!warningDisplayed) {
+                    Toast.makeText(this, "Champs vides ou nuls ignorés", Toast.LENGTH_SHORT).show();
+                    warningDisplayed = true;
+                }
+            }
+        }
         Odds odds = new Odds(listOdds);
         ((TextView) findViewById(R.id.gainResult)).setText(Double.toString(odds.gain()));
     }
