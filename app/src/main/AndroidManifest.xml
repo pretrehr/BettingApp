@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.android.bettingapp">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -23,6 +25,11 @@
         <activity
             android:name=".GainActivity"
             android:label="@string/title_activity_gain"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ParserActivity"
+            android:label="@string/title_activity_parser"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
+
 </manifest>

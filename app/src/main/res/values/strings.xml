@@ -8,4 +8,5 @@
     <string name="title_activity_gain">GainActivity</string>
     <string name="gainButtonText">Calcul</string>
     <string name="messageGainText">Entrez les cotes</string>
+    <string name="title_activity_parser">ParserActivity</string>
 </resources>

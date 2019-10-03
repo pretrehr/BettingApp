@@ -1,22 +1,29 @@
 package betClasses;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Raphael on 02/10/2019.
  */
 
 public class Match {
-
-    private Odds odds;
-    private LocalDateTime date;
+    private Date date;
     private String opponents;
 
 
-    public Match(String opponents, Odds odds, LocalDateTime date) {
+    public Match(String opponents, Date date) {
         this.opponents = opponents;
-        this.odds = odds;
         this.date = date;
+    }
+
+    public Match() {
+        this.date = Calendar.getInstance().getTime();
+        this.opponents = "";
+    }
+
+    @Override
+    public String toString() {
+        return "Match [date=" + date + ", opponents=" + opponents + "]";
     }
 }

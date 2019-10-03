@@ -21,6 +21,12 @@ public class Odds {
         this.oddsList = oddsList;
     }
 
+
+    @Override
+    public String toString() {
+        return "Odds [oddsList=" + oddsList + "]";
+    }
+
     /**
      * Calcule le retour attendu en couvrant toutes les issues
      */

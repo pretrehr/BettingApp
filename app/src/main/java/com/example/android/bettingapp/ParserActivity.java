@@ -1,6 +1,9 @@
 package com.example.android.bettingapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
@@ -20,13 +23,13 @@ import java.util.ArrayList;
 
 import betClasses.Odds;
 
-public class GainActivity extends AppCompatActivity
+public class ParserActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gain);
+        setContentView(R.layout.activity_parser);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -38,70 +41,19 @@ public class GainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        ConstraintLayout gainLayout = findViewById(R.id.gainLayout);
-        for( int i = 0; i < gainLayout.getChildCount(); i++ ) {
-            editTextOddsList.add((EditText) gainLayout.getChildAt(i));
-            if (i < lengthOddsList) {
-                editTextOddsList.get(i).setVisibility(View.VISIBLE);
-            } else {
-                editTextOddsList.get(i).setVisibility(View.INVISIBLE);
+    }
+
+    public void checkConn(View v) {
+        ConnectivityManager check = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] info = check.getAllNetworkInfo();
+        for (NetworkInfo anInfo : info) {
+            if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
+                Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
             }
         }
     }
-    ArrayList<EditText> editTextOddsList = new ArrayList<>();
-
-    int lengthOddsList = 3;
-
-    public void add(View v) {
-        editTextOddsList.get(lengthOddsList).setVisibility(View.VISIBLE);
-        lengthOddsList++;
-        if (lengthOddsList == 6) {
-            findViewById(R.id.addButton).setVisibility(View.INVISIBLE);
-        }
-        if (lengthOddsList == 2) {
-            findViewById(R.id.removeButton).setVisibility(View.VISIBLE);
-        }
-    }
-
-    public void remove(View v) {
-        lengthOddsList--;
-        if (lengthOddsList == 5) {
-            findViewById(R.id.addButton).setVisibility(View.VISIBLE);
-        }
-        if (lengthOddsList == 1) {
-            findViewById(R.id.removeButton).setVisibility(View.INVISIBLE);
-        }
-        editTextOddsList.get(lengthOddsList).setVisibility(View.INVISIBLE);
-    }
 
 
-    public void gain(View v) {
-        ArrayList<Double> listOdds = new ArrayList<>();
-        double odd;
-        boolean warningDisplayed = false;
-        for (EditText et : editTextOddsList) {
-            if (et.getVisibility() == View.INVISIBLE) {
-                break;
-            }
-            try {
-                odd = Double.parseDouble(et.getText().toString());
-                if (odd>0) {
-                    listOdds.add(odd);
-                }
-                else {
-                    throw new NumberFormatException();
-                }
-            }
-            catch (NumberFormatException e) {
-                if (!warningDisplayed) {
-                    Toast.makeText(this, "Champs vides ou nuls ignorés", Toast.LENGTH_SHORT).show();
-                    warningDisplayed = true;
-                }
-            }
-        }
-        Odds odds = new Odds(listOdds);
-        ((TextView) findViewById(R.id.gainResult)).setText(Double.toString(odds.gain()));
-    }
 
     @Override
     public void onBackPressed() {

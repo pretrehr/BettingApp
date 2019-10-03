@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity
     public void checkConn(View v) {
         ConnectivityManager check = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo[] info = check.getAllNetworkInfo();
-        for (int i = 0; i<info.length; i++){
-            if (info[i].getState() == NetworkInfo.State.CONNECTED){
+        for (NetworkInfo anInfo : info) {
+            if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
                 Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
             }
         }
@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.gain) {
             Intent myIntent = new Intent(getApplicationContext(), GainActivity.class);
+            startActivityForResult(myIntent, 0);
+        } else if (id == R.id.parser) {
+            Intent myIntent = new Intent(getApplicationContext(), ParserActivity.class);
             startActivityForResult(myIntent, 0);
         }
 

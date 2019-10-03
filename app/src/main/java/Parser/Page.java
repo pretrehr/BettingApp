@@ -1,0 +1,158 @@
+package Parser;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import betClasses.Match;
+import betClasses.Odds;
+
+/**
+ * Created by Raphael on 03/10/2019.
+ */
+
+public class Page {
+    private String url;
+    private boolean is1N2 = true;
+    private boolean isBasketball = false;
+    private ArrayList<Match> surebets = new ArrayList<Match>();
+    private String competitionName;
+
+    public Page(String url) {
+        this.url = url;
+        this.isBasketball = url.contains("basketball");
+        this.is1N2 = !(url.contains("tennis") || url.contains("volleyball"));
+        competitionName = url.split("-ed")[0].split("comparateur/")[1].replace("-", " ").split("/")[1];
+    }
+
+    public HashMap<Match, HashMap<String, Odds>> parse() {
+        return parse(new ArrayList<String>());
+    }
+
+
+    public HashMap<Match, HashMap<String, Odds>> parse(ArrayList<String> particularSites) {
+        int n;
+        if (is1N2) {
+            n = 3;
+        }
+        else {
+            n = 2;
+        }
+        Document document;
+        try {
+            document = Jsoup.connect(url).get();
+        }
+        catch (IOException e) {
+            throw new IllegalArgumentException();
+        }
+        HashMap<Match, HashMap<String, Odds>> matchOddsHash = new HashMap<>();
+        int countTeams = 0;
+        int countOdds = 0;
+        Match match = new Match();
+        String matchOpponents = "";
+        boolean surebet = false;
+        boolean sitesInDict;
+        String dateString;
+        String siteString = "";
+        ArrayList<Double> oddsList = new ArrayList<>();
+        Date date = new Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(" EEEE dd MMMM yyyy 'à' hh'h'mm ", Locale.FRENCH);
+        ArrayList<Match> surebetMatches = new ArrayList<>();
+        for (Element line : document.select("a, td, img")) {
+            if (line.nodeName().equals("a") && line.hasAttr("class")) {
+                if (countTeams == 0) {
+                    sitesInDict = true;
+                    if (!matchOpponents.isEmpty()) {
+                        for (String site : particularSites) {
+                            if (!matchOddsHash.get(match).containsKey(site)) {
+                                sitesInDict = false;
+                                break;
+                            }
+                        }
+                        if (matchOddsHash.get(match).isEmpty() || !sitesInDict) {
+                            matchOddsHash.remove(match);
+                        }
+                    }
+                    matchOpponents = "";
+                }
+                matchOpponents.concat(line.text());
+                matchOpponents+=line.text();
+                if (countTeams == 0) {
+                    matchOpponents+=" - ";
+                    countTeams++;
+                } else {
+                    match = new Match(matchOpponents, date);
+                    matchOddsHash.put(match, new HashMap<String, Odds>());
+                    countTeams = 0;
+                    if (line.parent().parent().attr("class").contains("surebetbox")) {
+                        surebet = true;
+                        surebetMatches.add(match);
+                    }
+                }
+            }
+            else if (line.hasAttr("src")) {
+                if (line.attr("src").contains("logop")) {
+                    siteString = line.attr("src").split("-")[1].split("\\.")[0];
+                }
+            }
+            else if (line.nodeName().equals("td")
+                    && line.parent().parent().parent().hasAttr("class")
+                    && line.parent().parent().parent().hasClass("bettable")
+                    && line.text().contains("à")) {
+                dateString = line.textNodes().get(3).toString();
+                try {
+                    date = simpleDateFormat.parse(dateString);
+                } catch (ParseException e) {
+                    throw new IllegalArgumentException();
+                }
+            }
+            else if (line.hasAttr("class") && line.hasClass("bet")) {
+                if (particularSites.isEmpty() || particularSites.contains(siteString)) {
+                    if (!line.text().contains("-")) {
+                        oddsList.add(Double.parseDouble(line.text()));
+                    }
+                    else {
+                        oddsList.add(-1.0);
+                    }
+                    if (countOdds < n-1) {
+                        countOdds++;
+                    }
+                    else {
+                        if (isBasketball) {
+                            if (!oddsList.contains(-1.0)) {
+                                oddsList.set(0, oddsList.get(0)/1.1);
+                                oddsList.set(2, oddsList.get(2)/1.1);
+                            }
+                            oddsList.remove(1);
+                        }
+                        matchOddsHash.get(match).put(siteString, new Odds(oddsList));
+                        countOdds = 0;
+                        oddsList.clear();
+                    }
+                }
+            }
+        }
+        sitesInDict = true;
+        for (String site : particularSites) {
+            if (!matchOddsHash.get(match).containsKey(site)) {
+                sitesInDict = false;
+                break;
+            }
+        }
+        if ((!matchOpponents.isEmpty() && !matchOddsHash.get(match).isEmpty()) || !sitesInDict) {
+            matchOddsHash.remove(match);
+        }
+        if (surebet) {
+            this.surebets = surebetMatches;
+        }
+        return matchOddsHash;
+    }
+}

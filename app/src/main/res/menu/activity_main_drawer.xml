@@ -20,6 +20,14 @@
         </menu>
     </item>
 
+    <item android:title="Outils en ligne">
+        <menu>
+            <item
+                android:id="@+id/parser"
+                android:title="Parser" />
+        </menu>
+    </item>
+
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
