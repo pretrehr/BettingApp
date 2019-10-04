@@ -10,15 +10,11 @@ public class Odds {
     private ArrayList<Double> oddsList;
 
     public Odds(ArrayList<Double> oddsList) {
-        this.oddsList = oddsList;
+        this.oddsList = new ArrayList<>(oddsList);
     }
 
     public ArrayList<Double> getOddsList() {
         return oddsList;
-    }
-
-    public void setOddsList(ArrayList<Double> oddsList) {
-        this.oddsList = oddsList;
     }
 
 
@@ -40,7 +36,7 @@ public class Odds {
 
     public Bets mises2(double mise_requise, int choix) {
         double gain = mise_requise*oddsList.get(choix);
-        ArrayList<Double> mises = new ArrayList<Double>();
+        ArrayList<Double> mises = new ArrayList<>();
         for (double odd : oddsList) {
             mises.add(gain/odd);
         }
@@ -50,7 +46,7 @@ public class Odds {
     }
 
     public Bets mises_freebet(double freebet, int choix) {
-        ArrayList<Double> oddsListFreebet = new ArrayList<Double>(oddsList);
+        ArrayList<Double> oddsListFreebet = new ArrayList<>(oddsList);
         oddsListFreebet.set(choix, oddsList.get(choix)-1);
         Odds oddsFreebet = new Odds(oddsListFreebet);
         return oddsFreebet.mises2(freebet, choix);

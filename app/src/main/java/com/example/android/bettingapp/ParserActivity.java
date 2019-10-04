@@ -19,12 +19,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+
+import Parser.Page;
+import betClasses.Match;
 import betClasses.Odds;
 
 public class ParserActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    TextView result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +54,7 @@ public class ParserActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        result = findViewById(R.id.result);
     }
 
     public void checkConn(View v) {
@@ -52,6 +66,44 @@ public class ParserActivity extends AppCompatActivity
             }
         }
     }
+
+
+    public void simpleParsing(View v) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final StringBuilder builder = new StringBuilder();
+
+//                try {
+                    String url = "http://www.comparateur-de-cotes.fr/comparateur/football/France-Ligue-1-ed3";
+                    Page page = new Page(url);
+                    HashMap<Match, HashMap<String, Odds>> parse = page.parse();
+
+                    builder.append(parse.values());
+//                    Document doc = Jsoup.connect("https://www.ssaurel.com/blog").get();
+//                    String title = doc.title();
+//                    Elements links = doc.select("a[href]");
+//
+//                    builder.append(title).append("n");
+//
+//                    for (Element link : links) {
+//                        builder.append("n").append("Link : ").append(link.attr("href"))
+//                                .append("n").append("Text : ").append(link.text());
+//                    }
+//                } catch (IOException e) {
+//                    builder.append("Error : ").append(e.getMessage()).append("n");
+//                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.setText(builder.toString());
+                    }
+                });
+            }
+        }).start();
+    }
+
 
 
 

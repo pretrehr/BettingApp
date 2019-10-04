@@ -1,5 +1,6 @@
 package Parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,13 +25,11 @@ public class Page {
     private boolean is1N2 = true;
     private boolean isBasketball = false;
     private ArrayList<Match> surebets = new ArrayList<Match>();
-    private String competitionName;
+    private String competitionName = "";
+    private String sport = "";
 
     public Page(String url) {
         this.url = url;
-        this.isBasketball = url.contains("basketball");
-        this.is1N2 = !(url.contains("tennis") || url.contains("volleyball"));
-        competitionName = url.split("-ed")[0].split("comparateur/")[1].replace("-", " ").split("/")[1];
     }
 
     public HashMap<Match, HashMap<String, Odds>> parse() {
@@ -51,8 +50,18 @@ public class Page {
             document = Jsoup.connect(url).get();
         }
         catch (IOException e) {
-            throw new IllegalArgumentException();
+            File input = new File(url);
+            try {
+                document = Jsoup.parse(input, "UTF-8");
+            } catch (IOException e1) {
+                throw new IllegalArgumentException();
+            }
         }
+        String[] splitTitle = document.title().split(" ");
+        this.sport = splitTitle[splitTitle.length-1];
+        this.competitionName = document.title().split("Comparer les cotes pour ")[1].split(sport)[0];
+        this.isBasketball = sport.equals("Basketball");
+        this.is1N2 = !(sport.equals("Tennis") || sport.equals("Volleyball"));
         HashMap<Match, HashMap<String, Odds>> matchOddsHash = new HashMap<>();
         int countTeams = 0;
         int countOdds = 0;
@@ -83,7 +92,6 @@ public class Page {
                     }
                     matchOpponents = "";
                 }
-                matchOpponents.concat(line.text());
                 matchOpponents+=line.text();
                 if (countTeams == 0) {
                     matchOpponents+=" - ";
