@@ -59,7 +59,7 @@ public class Page {
         }
         String[] splitTitle = document.title().split(" ");
         this.sport = splitTitle[splitTitle.length-1];
-        this.competitionName = document.title().split("Comparer les cotes pour ")[1].split(sport)[0];
+        this.competitionName = document.title().split("Comparer les cotes pour ")[1].split(" "+sport)[0];
         this.isBasketball = sport.equals("Basketball");
         this.is1N2 = !(sport.equals("Tennis") || sport.equals("Volleyball"));
         HashMap<Match, HashMap<String, Odds>> matchOddsHash = new HashMap<>();
@@ -162,5 +162,13 @@ public class Page {
             this.surebets = surebetMatches;
         }
         return matchOddsHash;
+    }
+
+    public String getSport() {
+        return sport;
+    }
+
+    public String getCompetitionName() {
+        return competitionName;
     }
 }

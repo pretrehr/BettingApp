@@ -2,6 +2,7 @@ package com.example.android.bettingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        sharedPref = getSharedPreferences("myPref", MODE_PRIVATE);
     }
 
     public void checkConn(View v) {
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
             }
         }
+        Toast.makeText(this, sharedPref.getString("Football France Ligue 1", "Not found"), Toast.LENGTH_LONG).show();
     }
 
     @Override
