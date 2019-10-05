@@ -24,7 +24,8 @@ public class Page {
     private String url;
     private boolean is1N2 = true;
     private boolean isBasketball = false;
-    private ArrayList<Match> surebets = new ArrayList<Match>();
+    private ArrayList<Match> surebets = new ArrayList<>();
+    private HashMap<String, Match> matches = new HashMap<>();
     private String competitionName = "";
     private String sport = "";
 
@@ -32,12 +33,12 @@ public class Page {
         this.url = url;
     }
 
-    public HashMap<Match, HashMap<String, Odds>> parse() {
+    public HashMap<String, HashMap<String, Odds>> parse() {
         return parse(new ArrayList<String>());
     }
 
 
-    public HashMap<Match, HashMap<String, Odds>> parse(ArrayList<String> particularSites) {
+    public HashMap<String, HashMap<String, Odds>> parse(ArrayList<String> particularSites) {
         int n;
         if (is1N2) {
             n = 3;
@@ -62,10 +63,10 @@ public class Page {
         this.competitionName = document.title().split("Comparer les cotes pour ")[1].split(" "+sport)[0];
         this.isBasketball = sport.equals("Basketball");
         this.is1N2 = !(sport.equals("Tennis") || sport.equals("Volleyball"));
-        HashMap<Match, HashMap<String, Odds>> matchOddsHash = new HashMap<>();
+        HashMap<String, HashMap<String, Odds>> matchOddsHash = new HashMap<>();
         int countTeams = 0;
         int countOdds = 0;
-        Match match = new Match();
+        Match match;
         String matchOpponents = "";
         boolean surebet = false;
         boolean sitesInDict;
@@ -81,13 +82,13 @@ public class Page {
                     sitesInDict = true;
                     if (!matchOpponents.isEmpty()) {
                         for (String site : particularSites) {
-                            if (!matchOddsHash.get(match).containsKey(site)) {
+                            if (!matchOddsHash.get(matchOpponents).containsKey(site)) {
                                 sitesInDict = false;
                                 break;
                             }
                         }
-                        if (matchOddsHash.get(match).isEmpty() || !sitesInDict) {
-                            matchOddsHash.remove(match);
+                        if (matchOddsHash.get(matchOpponents).isEmpty() || !sitesInDict) {
+                            matchOddsHash.remove(matchOpponents);
                         }
                     }
                     matchOpponents = "";
@@ -98,7 +99,8 @@ public class Page {
                     countTeams++;
                 } else {
                     match = new Match(matchOpponents, date);
-                    matchOddsHash.put(match, new HashMap<String, Odds>());
+                    matchOddsHash.put(matchOpponents, new HashMap<String, Odds>());
+                    matches.put(matchOpponents, match);
                     countTeams = 0;
                     if (line.parent().parent().attr("class").contains("surebetbox")) {
                         surebet = true;
@@ -141,7 +143,7 @@ public class Page {
                             }
                             oddsList.remove(1);
                         }
-                        matchOddsHash.get(match).put(siteString, new Odds(oddsList));
+                        matchOddsHash.get(matchOpponents).put(siteString, new Odds(oddsList));
                         countOdds = 0;
                         oddsList.clear();
                     }
@@ -150,13 +152,13 @@ public class Page {
         }
         sitesInDict = true;
         for (String site : particularSites) {
-            if (!matchOddsHash.get(match).containsKey(site)) {
+            if (!matchOddsHash.get(matchOpponents).containsKey(site)) {
                 sitesInDict = false;
                 break;
             }
         }
-        if ((!matchOpponents.isEmpty() && !matchOddsHash.get(match).isEmpty()) || !sitesInDict) {
-            matchOddsHash.remove(match);
+        if ((!matchOpponents.isEmpty() && !matchOddsHash.get(matchOpponents).isEmpty()) || !sitesInDict) {
+            matchOddsHash.remove(matchOpponents);
         }
         if (surebet) {
             this.surebets = surebetMatches;

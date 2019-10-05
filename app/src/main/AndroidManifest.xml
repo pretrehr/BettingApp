@@ -29,6 +29,10 @@
         <activity
             android:name=".ParserActivity"
             android:label="@string/title_activity_parser"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CashbackActivity"
+            android:label="@string/title_activity_cashback"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

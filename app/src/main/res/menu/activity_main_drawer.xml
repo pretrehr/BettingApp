@@ -25,6 +25,9 @@
             <item
                 android:id="@+id/parser"
                 android:title="Parser" />
+            <item
+                android:id="@+id/cashback"
+                android:title="Cashback" />
         </menu>
     </item>
 

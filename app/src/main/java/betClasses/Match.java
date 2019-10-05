@@ -22,6 +22,10 @@ public class Match {
         this.opponents = "";
     }
 
+    public Date getDate() {
+        return date;
+    }
+
     @Override
     public String toString() {
         return "Match [date=" + date + ", opponents=" + opponents + "]";

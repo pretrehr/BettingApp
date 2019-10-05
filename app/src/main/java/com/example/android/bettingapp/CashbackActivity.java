@@ -1,14 +1,11 @@
 package com.example.android.bettingapp;
 
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,37 +15,28 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
-import Parser.Page;
 import betClasses.Match;
 import betClasses.Odds;
 
-public class ParserActivity extends AppCompatActivity
+public class CashbackActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    TextView result;
     SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_parser);
+        setContentView(R.layout.activity_cashback);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -60,51 +48,85 @@ public class ParserActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        result = findViewById(R.id.result);
         sharedPref = getSharedPreferences("myPref", MODE_PRIVATE);
     }
 
-    public void checkConn(View v) {
-        ConnectivityManager check = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo[] info = check.getAllNetworkInfo();
-        for (NetworkInfo anInfo : info) {
-            if (anInfo.getState() == NetworkInfo.State.CONNECTED) {
-                Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
+    public void bestMatchCashback(View v) {
+        String siteString = "betclic";
+        double minimumOdd = 1.1;
+        double bet = 10;
+        boolean freebet = true;
+        double combiMax = 0;
+        double combiOdd = 1;
+        double rateCashback = 1;
+        Date dateMin = null;
+        Date dateMax = null;
+        Odds oddsSite;
+        Odds bestOdds;
+        Odds odds;
+        Odds oddsToCheck = null;
+        Odds bestOverallOdds;
+        double profit;
+        String bestMatch = "";
+        String[] bestSites = new String[3];
+        String[] sites = new String[3];
+        String serializedHashMap =  sharedPref.getString("Football France Ligue 1", "Not found");
+        Gson gson = new Gson();
+        java.lang.reflect.Type type = new TypeToken<HashMap<String, HashMap<String, Odds>>>(){}.getType();
+        int a= 1;
+        HashMap<String, HashMap<String, Odds>> allOdds = gson.fromJson(serializedHashMap, type);
+        double bestProfit = -bet;
+        int bestRank = 0;
+        for (String match : allOdds.keySet()) {
+            if (allOdds.get(match).containsKey(siteString)) {
+//                    && (dateMax == null || match.getDate().compareTo(dateMax) <= 0)
+//                    && (dateMin == null || match.getDate().compareTo(dateMin) >= 0)) {
+                oddsSite = allOdds.get(match).get(siteString);
+                bestOdds = new Odds(oddsSite);
+                bestSites[0] = siteString;
+                bestSites[1] = siteString;
+                bestSites[2] = siteString;
+                for (String site : allOdds.get(match).keySet()) {
+                    odds = allOdds.get(match).get(site);
+                    for (int i = 0; i<3; i++) {
+                        if (odds.get(i) > bestOdds.get(i)) {
+                            bestOdds.getOddsList().set(i, odds.get(i));
+                            bestSites[i] = site;
+                        }
+                    }
+                    for (int i = 0; i<3; i++) {
+                        ArrayList<Double> oddsToCheckList = new ArrayList<>();
+                        for (int j = 0; j<i; j++) {
+                            oddsToCheckList.add(bestOdds.get(j));
+                        }
+                        oddsToCheckList.add(combiOdd*oddsSite.get(i)*(1+combiMax)-combiMax);
+                        for (int j = i+1; j<3; j++) {
+                            oddsToCheckList.add(bestOdds.get(j));
+                        }
+                        oddsToCheck = new Odds(oddsToCheckList);
+                        if (oddsToCheck.get(i) >= minimumOdd) {
+                            profit = oddsToCheck.pariRembourseSiPerdant(bet, i, freebet, rateCashback);
+                            if (profit > bestProfit) {
+                                bestRank = i;
+                                bestProfit = profit;
+                                bestMatch = match;
+                                bestOverallOdds = new Odds(oddsToCheck);
+                                for (int j = 0; j<i; j++) {
+                                    sites[j] = bestSites[j];
+                                }
+                                sites[i] = site;
+                                for (int j = i+1; j<3; j++) {
+                                    sites[j] = bestSites[j];
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+        Toast.makeText(this, bestMatch, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, ""+oddsToCheck.pariRembourseSiPerdant(bet, bestRank, freebet, rateCashback), Toast.LENGTH_LONG).show();
     }
-
-
-    public void simpleParsing(View v) throws IOException {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Gson gson = new Gson();
-                final StringBuilder builder = new StringBuilder();
-                String url = "http://www.comparateur-de-cotes.fr/comparateur/football/France-Ligue-1-ed3";
-                Page page = new Page(url);
-                HashMap<String, HashMap<String, Odds>> parse = page.parse();
-                builder.append(parse.values());
-                sharedPref.edit().putString(page.getSport()+" "+page.getCompetitionName(), gson.toJson(parse)).apply();
-                NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-                Notification notify = null;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    notify = new Notification.Builder(getApplicationContext()).setContentTitle("title").setContentText("body").setSmallIcon(R.drawable.ic_menu_camera).build();
-                }
-                notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                notif.notify(0, notify);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        result.setText(builder.toString());
-                    }
-                });
-            }
-        }).start();
-    }
-
-
-
 
     @Override
     public void onBackPressed() {

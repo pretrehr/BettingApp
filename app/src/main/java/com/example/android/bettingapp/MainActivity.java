@@ -118,6 +118,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.parser) {
             Intent myIntent = new Intent(getApplicationContext(), ParserActivity.class);
             startActivityForResult(myIntent, 0);
+        } else if (id == R.id.cashback) {
+            Intent myIntent = new Intent(getApplicationContext(), CashbackActivity.class);
+            startActivityForResult(myIntent, 0);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

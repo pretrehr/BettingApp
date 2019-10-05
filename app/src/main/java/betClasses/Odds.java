@@ -1,6 +1,8 @@
 package betClasses;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Raphael on 02/10/2019.
@@ -11,6 +13,18 @@ public class Odds {
 
     public Odds(ArrayList<Double> oddsList) {
         this.oddsList = new ArrayList<>(oddsList);
+    }
+
+    public Odds(Odds odds) {
+        this.oddsList = new ArrayList<>(odds.getOddsList());
+    }
+
+    public void set(int i, double odd) {
+        oddsList.set(i, odd);
+    }
+
+    public double get(int i) {
+        return oddsList.get(i);
     }
 
     public ArrayList<Double> getOddsList() {
@@ -50,5 +64,37 @@ public class Odds {
         oddsListFreebet.set(choix, oddsList.get(choix)-1);
         Odds oddsFreebet = new Odds(oddsListFreebet);
         return oddsFreebet.mises2(freebet, choix);
+    }
+
+    public double pariRembourseSiPerdant(double miseMax, int rang, boolean freebet, double tauxRemboursement) {
+        int rembFreebet =  freebet ? 1 : 0;
+        int notRembFreebet = freebet ? 0 : 1;
+        double taux = (notRembFreebet + 0.77*rembFreebet)*tauxRemboursement;
+        double coteMax;
+        double gains;
+        int i = 0;
+        if (rang == -1) {
+            coteMax = Collections.max(oddsList);
+            for (double odd : oddsList) {
+                if (odd == coteMax) {
+                    rang = i;
+                    break;
+                }
+                i++;
+            }
+        }
+        gains = miseMax*oddsList.get(rang);
+        ArrayList<Double> mis = new ArrayList<>();
+        i = 0;
+        for (double odd : oddsList) {
+            if (i == rang) {
+                mis.add(miseMax);
+            }
+            else {
+                mis.add((gains-miseMax*taux)/odd);
+            }
+            i++;
+        }
+        return gains-(new Bets(mis)).getSumBets();
     }
 }

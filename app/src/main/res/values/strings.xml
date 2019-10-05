@@ -9,4 +9,5 @@
     <string name="gainButtonText">Calcul</string>
     <string name="messageGainText">Entrez les cotes</string>
     <string name="title_activity_parser">ParserActivity</string>
+    <string name="title_activity_cashback">CashbackActivity</string>
 </resources>
