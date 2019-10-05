@@ -166,6 +166,10 @@ public class Page {
         return matchOddsHash;
     }
 
+    public HashMap<String, Match> getMatches() {
+        return matches;
+    }
+
     public String getSport() {
         return sport;
     }

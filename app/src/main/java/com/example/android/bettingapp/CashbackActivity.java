@@ -70,17 +70,19 @@ public class CashbackActivity extends AppCompatActivity
         String bestMatch = "";
         String[] bestSites = new String[3];
         String[] sites = new String[3];
-        String serializedHashMap =  sharedPref.getString("Football France Ligue 1", "Not found");
+        String serializedHashMapOdds =  sharedPref.getString("Odds Football France Ligue 1", "Not found");
+        String serializedHashMapMatches = sharedPref.getString("Matches Football France Ligue 1", "Not found");
         Gson gson = new Gson();
-        java.lang.reflect.Type type = new TypeToken<HashMap<String, HashMap<String, Odds>>>(){}.getType();
-        int a= 1;
-        HashMap<String, HashMap<String, Odds>> allOdds = gson.fromJson(serializedHashMap, type);
+        java.lang.reflect.Type type1 = new TypeToken<HashMap<String, HashMap<String, Odds>>>(){}.getType();
+        java.lang.reflect.Type type2 = new TypeToken<HashMap<String, Match>>(){}.getType();
+        HashMap<String, HashMap<String, Odds>> allOdds = gson.fromJson(serializedHashMapOdds, type1);
+        HashMap<String, Match> matches = gson.fromJson(serializedHashMapMatches, type2);
         double bestProfit = -bet;
         int bestRank = 0;
         for (String match : allOdds.keySet()) {
-            if (allOdds.get(match).containsKey(siteString)) {
-//                    && (dateMax == null || match.getDate().compareTo(dateMax) <= 0)
-//                    && (dateMin == null || match.getDate().compareTo(dateMin) >= 0)) {
+            if (allOdds.get(match).containsKey(siteString)
+                    && (dateMax == null || matches.get(match).getDate().compareTo(dateMax) <= 0)
+                    && (dateMin == null || matches.get(match).getDate().compareTo(dateMin) >= 0)) {
                 oddsSite = allOdds.get(match).get(siteString);
                 bestOdds = new Odds(oddsSite);
                 bestSites[0] = siteString;
@@ -126,6 +128,7 @@ public class CashbackActivity extends AppCompatActivity
         }
         Toast.makeText(this, bestMatch, Toast.LENGTH_LONG).show();
         Toast.makeText(this, ""+bestOverallOdds.pariRembourseSiPerdant(bet, bestRank, freebet, rateCashback), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, ""+matches, Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -84,8 +84,9 @@ public class ParserActivity extends AppCompatActivity
                 String url = "http://www.comparateur-de-cotes.fr/comparateur/football/France-Ligue-1-ed3";
                 Page page = new Page(url);
                 HashMap<String, HashMap<String, Odds>> parse = page.parse();
-                builder.append(parse.values());
-                sharedPref.edit().putString(page.getSport()+" "+page.getCompetitionName(), gson.toJson(parse)).apply();
+                builder.append(parse);
+                sharedPref.edit().putString("Odds "+page.getSport()+" "+page.getCompetitionName(), gson.toJson(parse)).apply();
+                sharedPref.edit().putString("Matches "+page.getSport()+" "+page.getCompetitionName(), gson.toJson(page.getMatches())).apply();
                 NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
                 Notification notify = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
