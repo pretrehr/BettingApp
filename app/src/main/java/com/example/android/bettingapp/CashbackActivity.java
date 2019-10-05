@@ -64,8 +64,8 @@ public class CashbackActivity extends AppCompatActivity
         Odds oddsSite;
         Odds bestOdds;
         Odds odds;
-        Odds oddsToCheck = null;
-        Odds bestOverallOdds;
+        Odds oddsToCheck;
+        Odds bestOverallOdds = null;
         double profit;
         String bestMatch = "";
         String[] bestSites = new String[3];
@@ -125,7 +125,7 @@ public class CashbackActivity extends AppCompatActivity
             }
         }
         Toast.makeText(this, bestMatch, Toast.LENGTH_LONG).show();
-        Toast.makeText(this, ""+oddsToCheck.pariRembourseSiPerdant(bet, bestRank, freebet, rateCashback), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, ""+bestOverallOdds.pariRembourseSiPerdant(bet, bestRank, freebet, rateCashback), Toast.LENGTH_LONG).show();
     }
 
     @Override
