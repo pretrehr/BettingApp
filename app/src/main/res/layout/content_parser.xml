@@ -8,21 +8,26 @@
     tools:context="com.example.android.bettingapp.ParserActivity"
     tools:showIn="@layout/activity_parser">
 
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Test Internet"-->
-        <!--android:onClick="checkConn"/>-->
+
+
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Parsing Ligue 1"
-        android:onClick="simpleParsing"/>
+        android:onClick="parsing"
+        android:id="@+id/textParsing"/>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textParsing"
+        android:id="@+id/spinner">
+    </Spinner>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textParsing"
         android:id="@+id/result"/>
-
 </android.support.constraint.ConstraintLayout>

@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,25 +17,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import Parser.Page;
-import betClasses.Match;
+import Parser.Sport;
 import betClasses.Odds;
 
 public class ParserActivity extends AppCompatActivity
@@ -62,6 +54,23 @@ public class ParserActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         result = findViewById(R.id.result);
         sharedPref = getSharedPreferences("myPref", MODE_PRIVATE);
+
+        String[] select_qualification = {
+                "Sport", "football", "tennis", "rugby", "basketball", "handball", "volleyball",
+                "hockey sur glace", "boxe"};
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+
+        ArrayList<ItemSpinner> itemSpinners = new ArrayList<>();
+
+        for (int i = 0; i < select_qualification.length; i++) {
+            ItemSpinner itemSpinner = new ItemSpinner();
+            itemSpinner.setString(select_qualification[i]);
+            itemSpinner.setSelected(false);
+            itemSpinners.add(itemSpinner);
+        }
+        MyAdapter myAdapter = new MyAdapter(getApplicationContext(), 0,
+                itemSpinners);
+        spinner.setAdapter(myAdapter);
     }
 
     public void checkConn(View v) {
@@ -72,6 +81,43 @@ public class ParserActivity extends AppCompatActivity
                 Toast.makeText(this, "Internet is connected", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void parsing(View v) throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Gson gson = new Gson();
+                final StringBuilder builder = new StringBuilder();
+                Sport sport = new Sport("rugby");
+                ArrayList<String> urls = sport.getURLs();
+                ArrayList<HashMap<String, HashMap<String, Odds>>> maps = new ArrayList<>();
+                HashMap<String, HashMap<String, Odds>> parse = new HashMap<>();
+                NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+                Notification notify = null;
+                for (String url: urls) {
+                    Page page = new Page(url);
+                    page.parse();
+                    parse.putAll(page.parse());
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        if (!page.getSurebets().isEmpty()) {
+                            notify = new Notification.Builder(getApplicationContext()).setContentTitle("Surebets").setContentText(""+page.getSurebets()).setSmallIcon(R.drawable.ic_menu_camera).build();
+                            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                            notif.notify(0, notify);
+                        }
+                    }
+                    sharedPref.edit().putString("Odds " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(parse)).apply();
+                    sharedPref.edit().putString("Matches " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(page.getMatches())).apply();
+                }
+                builder.append(parse);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        result.setText(builder.toString());
+                    }
+                });
+            }
+        }).start();
     }
 
 
@@ -90,10 +136,12 @@ public class ParserActivity extends AppCompatActivity
                 NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
                 Notification notify = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                    notify = new Notification.Builder(getApplicationContext()).setContentTitle("title").setContentText("body").setSmallIcon(R.drawable.ic_menu_camera).build();
+                    if (!page.getSurebets().isEmpty()) {
+                        notify = new Notification.Builder(getApplicationContext()).setContentTitle("Surebets").setContentText(""+page.getSurebets()).setSmallIcon(R.drawable.ic_menu_camera).build();
+                        notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                        notif.notify(0, notify);
+                    }
                 }
-                notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                notif.notify(0, notify);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

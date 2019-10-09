@@ -118,6 +118,9 @@ public class Page {
                     && line.parent().parent().parent().hasClass("bettable")
                     && line.text().contains("à")) {
                 dateString = line.textNodes().get(3).toString();
+                if (dateString.equals(" ")) {
+                    dateString = line.textNodes().get(1).toString();
+                }
                 try {
                     date = simpleDateFormat.parse(dateString);
                 } catch (ParseException e) {
@@ -168,6 +171,10 @@ public class Page {
 
     public HashMap<String, Match> getMatches() {
         return matches;
+    }
+
+    public ArrayList<Match> getSurebets() {
+        return surebets;
     }
 
     public String getSport() {
