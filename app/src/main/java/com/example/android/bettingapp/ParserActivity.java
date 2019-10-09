@@ -36,6 +36,7 @@ public class ParserActivity extends AppCompatActivity
 
     TextView result;
     SharedPreferences sharedPref;
+    ArrayList<ItemSpinner> itemSpinners;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +59,9 @@ public class ParserActivity extends AppCompatActivity
         String[] select_qualification = {
                 "Sport", "football", "tennis", "rugby", "basketball", "handball", "volleyball",
                 "hockey sur glace", "boxe"};
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        Spinner spinner = findViewById(R.id.spinner);
 
-        ArrayList<ItemSpinner> itemSpinners = new ArrayList<>();
+        itemSpinners = new ArrayList<>();
 
         for (int i = 0; i < select_qualification.length; i++) {
             ItemSpinner itemSpinner = new ItemSpinner();
@@ -89,25 +90,34 @@ public class ParserActivity extends AppCompatActivity
             public void run() {
                 Gson gson = new Gson();
                 final StringBuilder builder = new StringBuilder();
-                Sport sport = new Sport("rugby");
-                ArrayList<String> urls = sport.getURLs();
-                ArrayList<HashMap<String, HashMap<String, Odds>>> maps = new ArrayList<>();
+                ArrayList<String> selectedSports = new ArrayList<>();
+                ArrayList<String> urls;
                 HashMap<String, HashMap<String, Odds>> parse = new HashMap<>();
-                NotificationManager notif = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-                Notification notify = null;
-                for (String url: urls) {
-                    Page page = new Page(url);
-                    page.parse();
-                    parse.putAll(page.parse());
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                        if (!page.getSurebets().isEmpty()) {
-                            notify = new Notification.Builder(getApplicationContext()).setContentTitle("Surebets").setContentText(""+page.getSurebets()).setSmallIcon(R.drawable.ic_menu_camera).build();
-                            notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                            notif.notify(0, notify);
-                        }
+                for (ItemSpinner item : itemSpinners) {
+                    if (item.isSelected()) {
+                        selectedSports.add(item.getString());
                     }
-                    sharedPref.edit().putString("Odds " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(parse)).apply();
-                    sharedPref.edit().putString("Matches " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(page.getMatches())).apply();
+                }
+                Sport sport;
+                for (String sportString : selectedSports) {
+                    sport = new Sport(sportString);
+                    urls = sport.getURLs();
+                    NotificationManager notif = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    Notification notify = null;
+                    for (String url : urls) {
+                        Page page = new Page(url);
+                        page.parse();
+                        parse.putAll(page.parse());
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                            if (!page.getSurebets().isEmpty()) {
+                                notify = new Notification.Builder(getApplicationContext()).setContentTitle("Surebets").setContentText("" + page.getSurebets()).setSmallIcon(R.drawable.ic_menu_camera).build();
+                                notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                                notif.notify(0, notify);
+                            }
+                        }
+                        sharedPref.edit().putString("Odds " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(parse)).apply();
+                        sharedPref.edit().putString("Matches " + page.getSport() + " " + page.getCompetitionName(), gson.toJson(page.getMatches())).apply();
+                    }
                 }
                 builder.append(parse);
                 runOnUiThread(new Runnable() {
